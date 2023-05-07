@@ -68,12 +68,33 @@ class ProductoController {
 
 class CarritoController {
     constructor() {
+        this.precio_total = document.getElementById("precio_total")
         this.listaCarrito = []
         this.contenedor_carrito = document.getElementById("contenedor_carrito")
     }
 
+    calcularPrecioTotal(){
+        let total = 0;
+
+            total = this.listaCarrito.reduce((total, producto) => total + producto.cantidad * producto.precio, 0)
+            this.precio_total.innerHTML = 'Total a pagar: $' + total;
+    }
+
     agregar(producto) {
-        this.listaCarrito.push(producto)
+        let flag = false;
+
+        for (let i = 0; i < this.listaCarrito.length; i++) {
+            if(this.listaCarrito[i].id == producto.id){
+                this.listaCarrito[i].cantidad += 1;
+                flag = true
+            }
+        }
+        
+        if (flag == false) {
+            this.listaCarrito.push(producto)
+            
+        }
+        //this.listaCarrito.push(producto)
     }
 
     limpiarCarritoEnStorage(){
@@ -96,6 +117,14 @@ class CarritoController {
         this.contenedor_carrito.innerHTML = ""
     }
 
+    borrar(producto){
+        let posicion = this.listaCarrito.findIndex(miProducto => producto.id == miProducto.id)
+
+        if( !(posicion == -1)){
+            this.listaCarrito.splice(posicion, 1)
+        }
+    }
+
     mostrarEnDOM() {
         this.limpiarContenedor_Carrito()
         this.listaCarrito.forEach(producto => {
@@ -111,11 +140,21 @@ class CarritoController {
                             <p class="card-text">Descripcion: ${producto.descripcion}</p>
                             <p class="card-text">Precio: $${producto.precio}</p>
                             <p class="card-text">Cantidad: ${producto.cantidad}</p>
+                            <button class="btn btn-danger" id="borrar-"><i class="fa-sharp fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 </div>
             </div>`
         })
+
+       /* this.listaCarrito.forEach(producto => {
+            const btnBorrar = document.getElementById(`borrar-${producto}`) 
+        
+            btnBorrar.addEventListener("click",() =>
+                this.listaCarrito.borrar(producto))
+        })*/
+        
+        this.calcularPrecioTotal()
     }
 }
 
